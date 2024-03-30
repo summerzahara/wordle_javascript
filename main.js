@@ -1,3 +1,4 @@
+
 // Keyboard
 const keys = document.querySelectorAll('#key')
 const submit = document.querySelector('#key-enter')
@@ -15,8 +16,9 @@ const sixthWord = document.querySelector('#word-6')
 const wordsDisplayed = [firstWord, secondWord, thirdWord, fourthWord, fifthWord, sixthWord]
 
 // Set word
-const gameWord = "TEARS"
-let gameActive = true
+const wordList = ['frank', 'fraud', 'freak', 'freed', 'freer', 'fresh', 'friar', 'fried', 'frill', 'frisk', 'fritz', 'frock', 'frond', 'front', 'frost', 'froth']
+let gameWord = ''
+let gameActive = false
 
 // Guesses
 let currWord = []
@@ -28,35 +30,42 @@ const gamesLostDisplay = document.querySelector('#games-lost')
 let gamesWon = 0
 let gamesLost = 0
 
-// console.log(keys);
+function setGameWord() {
+    let randomNum = Math.floor(Math.random() * 16)
+    gameWord = wordList[randomNum].toUpperCase()
+    console.log(gameWord)
+    return gameWord
+}
 
-function enterLetter(e) {   
-    const letter = e.target.innerText
-    // console.log(letter)
-    if (currWord.length < 5) {
-        currWord.push(letter)
-        letterOnScreen(currWord)
+
+function enterLetter(e) {
+    if (gameActive) {
+        const letter = e.target.innerText
+        if (currWord.length < 5) {
+            currWord.push(letter)
+            letterOnScreen(currWord)
+        } else {
+            alert('Word can be only 5 letters.')
+        }
     } else {
-        console.log('Word only 5 letters.')
+        alert('Push Play Button to Start')
     }
-    // console.log(currWord)
 }
 
 function deleteLetter(e) {
     removeOnScreen(currWord)
     currWord.pop()
-    // console.log(currWord)
 }
 
 function letterOnScreen(word) {
-    i = word.length - 1
+    let i = word.length - 1
     const selectRow = wordsGuessed.length
     const boxes = wordsDisplayed[selectRow].querySelectorAll('#letter')
     boxes[i].value = word[i]
 }
 
 function removeOnScreen(word) {
-    i = word.length - 1
+    let i = word.length - 1
     const selectRow = wordsGuessed.length
     const boxes = wordsDisplayed[selectRow].querySelectorAll('#letter')
     boxes[i].value = ""
@@ -83,16 +92,15 @@ function allGreen(){
 
 function guessWord(e) {
     if (currWord.length < 5) {
-        console.log('Word must be 5 letters')
+        alert('Word can be only 5 letters.')
         return 0
     } else if (checkGame()) {
         if (currWord.length = 5) {
             wordsGuessed.push(currWord.join(''))
             checkGuess(currWord)
             resetCurrWord()
-            console.log(wordsGuessed)
         } else {
-            console.log('Game Over')
+            alert('Game Over.')
         }
     }
 }
@@ -102,16 +110,14 @@ function resetCurrWord() {
 }
 
 function checkGame() {
-    console.log(currWord.join(''))
     if (currWord.join('') === gameWord) {
         allGreen(currWord)
         gamesWon += 1
         updateScore()
-        console.log("Game Won!")
+        alert(`Game Won! The word was ${gameWord}`)
         gameActive = false
         return gameActive
     } else if (wordsGuessed.length < 5) {
-        console.log('game continues')
         return gameActive
     } else if (wordsGuessed.length === 5) {
         const lastGuess = wordsGuessed[wordsGuessed.length - 1];
@@ -119,11 +125,11 @@ function checkGame() {
             allGreen(currWord)
             gamesWon += 1
             updateScore()
-            console.log("Game Won!")
+            alert(`Game Won! The word was ${gameWord}`)
         } else {
             gamesLost += 1
             updateScore()
-            console.log("No more guesses :(")
+            alert(`No more guesses :( The word was ${gameWord}`)
         }
         gameActive = false
         return gameActive
@@ -132,14 +138,10 @@ function checkGame() {
 
 function checkGuess(word) {
     const gameWordArr = gameWord.split("")
-    // console.log(gameWordArr)
     gameWordArr.forEach(letter => {
         if (word.includes(letter)) {
-            // console.log(letter)
             const position = word.indexOf(letter)
             yellowOnScreen(position)
-        } else {
-            console.log('no match')
         }
     })
 
@@ -159,6 +161,7 @@ function newGame() {
     wordsGuessed = []
     resetCurrWord()
     gameActive = true
+    setGameWord()
 }
 
 function updateScore() {
